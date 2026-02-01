@@ -1,90 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Be My Valentine 💖</title>
+  <meta charset="UTF-8">
+  <title>For Mayren 💕</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
-      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+      margin: 0;
       height: 100vh;
+      background: linear-gradient(135deg, #ffb6c1, #ffd1dc);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Arial', sans-serif;
-      text-align: center;
+      font-family: Arial, sans-serif;
       overflow: hidden;
     }
 
-    .box {
+    .card {
       background: white;
       padding: 30px;
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      width: 300px;
+      text-align: center;
+      width: 320px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      animation: bounce 1.5s infinite alternate;
     }
 
     h1 {
-      color: #e91e63;
+      color: #ff4d79;
+      font-size: 26px;
+    }
+
+    .buttons {
+      margin-top: 25px;
+      height: 120px;
+      position: relative;
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 16px;
       border: none;
-      border-radius: 10px;
+      border-radius: 30px;
+      padding: 12px 25px;
+      font-size: 16px;
       cursor: pointer;
-      margin: 10px;
-    }
-
-    #yes {
-      background: #e91e63;
-      color: white;
-    }
-
-    #no {
-      background: #ccc;
       position: absolute;
     }
 
-    #message {
-      margin-top: 20px;
-      font-size: 18px;
-      color: #e91e63;
-      display: none;
+    #yesBtn {
+      background: #ff4d79;
+      color: white;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: transform 0.3s ease;
+    }
+
+    #noBtn {
+      background: #ddd;
+      color: #333;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .message {
+      margin-top: 15px;
+      min-height: 60px;
+      color: #ff4d79;
+      font-weight: bold;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+
+    .heart {
+      position: fixed;
+      bottom: -20px;
+      font-size: 20px;
+      animation: floatUp 6s linear infinite;
+      color: rgba(255,77,121,0.7);
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-110vh); opacity: 0; }
     }
   </style>
 </head>
+
 <body>
 
-  <div class="box">
-    <h1>Will you be my Valentine? 💕</h1>
-    <button id="yes">Yes 💖</button>
-    <button id="no">No 🙄</button>
-    <div id="message"></div>
+<div class="card" id="card">
+  <h1>Mayren 💕<br>Will you be my Valentine?</h1>
+
+  <div class="buttons">
+    <button id="yesBtn">YES ✨</button>
+    <button id="noBtn">No 🙈</button>
   </div>
 
-  <script>
-    const noBtn = document.getElementById("no");
-    const yesBtn = document.getElementById("yes");
-    const message = document.getElementById("message");
+  <div class="message" id="message"></div>
+</div>
 
-    noBtn.addEventListener("mouseover", () => {
-      const x = Math.random() * (window.innerWidth - 100);
-      const y = Math.random() * (window.innerHeight - 100);
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
-    });
+<script>
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn = document.getElementById("noBtn");
+  const message = document.getElementById("message");
+  const card = document.getElementById("card");
 
-    noBtn.addEventListener("click", () => {
-      message.style.display = "block";
-      message.innerHTML = "Nice try 😏 You don’t get to say no.";
-    });
+  let yesScale = 1;
+  let noClicks = 0;
 
-    yesBtn.addEventListener("click", () => {
-      message.style.display = "block";
-      message.innerHTML = "YAYYYY 💖 I knew it! I love you 😘";
-    });
-  </script>
+  const curses = [
+    "❌ McDonald's fries lose their crunch 🍟",
+    "❌ Man United keeps losing ⚽",
+    "❌ Argentina loses the World Cup 🇦🇷",
+    "❌ Messi misses open goals 🐐",
+    "❌ Your pillow is always warm 😈"
+  ];
+
+  yesBtn.addEventListener("click", () => {
+    card.innerHTML = `
+      <h1>YOU’RE SAFE 😌💖</h1>
+      <p>
+        All curses have been lifted ✨<br><br>
+        ✅ Fries are crispy 🍟<br>
+        ✅ Messi scores 🐐<br>
+        ✅ Argentina wins 🇦🇷<br>
+        ✅ Football happiness restored ⚽<br><br>
+        Lots of love,<br>
+        <strong>Your Kerii 💕</strong>
+      </p>
+    `;
+  });
+
+  noBtn.addEventListener("click", () => {
+    message.textContent = curses[noClicks % curses.length];
+    noClicks++;
+
+    yesScale += 0.2;
+    yesBtn.style.transform = `translateX(-50%) scale(${yesScale})`;
+
+    const x = Math.random() * 220 - 110;
+    const y = Math.random() * 80;
+    noBtn.style.transform = `translate(${x}px, ${y}px)`;
+  });
+
+  function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.textContent = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 6000);
+  }
+
+  setInterval(createHeart, 400);
+</script>
 
 </body>
 </html>
