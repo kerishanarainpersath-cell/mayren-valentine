@@ -25,6 +25,8 @@
       width: 320px;
       box-shadow: 0 15px 30px rgba(0,0,0,0.2);
       animation: bounce 1.5s infinite alternate;
+      position: relative;
+      z-index: 2;
     }
 
     h1 {
@@ -34,7 +36,7 @@
 
     .buttons {
       margin-top: 25px;
-      height: 120px;
+      height: 140px;
       position: relative;
     }
 
@@ -64,10 +66,12 @@
     }
 
     .message {
-      margin-top: 15px;
-      min-height: 60px;
+      margin-top: 20px;
+      min-height: 70px;
       color: #ff4d79;
       font-weight: bold;
+      position: relative;
+      z-index: 3;
     }
 
     @keyframes bounce {
@@ -81,16 +85,32 @@
       font-size: 20px;
       animation: floatUp 6s linear infinite;
       color: rgba(255,77,121,0.7);
+      z-index: 1;
     }
 
     @keyframes floatUp {
       from { transform: translateY(0); opacity: 1; }
       to { transform: translateY(-110vh); opacity: 0; }
     }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
   </style>
 </head>
 
 <body>
+
+<!-- Romantic instrumental music -->
+<audio id="bgMusic" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/10/30/audio_8c4a6c2f3f.mp3" type="audio/mpeg">
+</audio>
+
+<canvas id="confetti"></canvas>
 
 <div class="card" id="card">
   <h1>Mayren 💕<br>Will you be my Valentine?</h1>
@@ -108,9 +128,12 @@
   const noBtn = document.getElementById("noBtn");
   const message = document.getElementById("message");
   const card = document.getElementById("card");
+  const music = document.getElementById("bgMusic");
 
+  let yesClicks = 0;
   let yesScale = 1;
   let noClicks = 0;
+  let musicStarted = false;
 
   const curses = [
     "❌ McDonald's fries lose their crunch 🍟",
@@ -120,30 +143,49 @@
     "❌ Your pillow is always warm 😈"
   ];
 
+  const savedMessages = [
+    "😌 Saved! McDonald's fries stay crispy 🍟",
+    "😌 Saved! Man United might win again ⚽",
+    "😌 Saved! Argentina wins the World Cup 🇦🇷",
+    "😌 Saved! Messi scores again 🐐⚽"
+  ];
+
+  function startMusic() {
+    if (!musicStarted) {
+      music.play();
+      musicStarted = true;
+    }
+  }
+
   yesBtn.addEventListener("click", () => {
-    card.innerHTML = `
-      <h1>YOU’RE SAFE 😌💖</h1>
-      <p>
-        All curses have been lifted ✨<br><br>
-        ✅ Fries are crispy 🍟<br>
-        ✅ Messi scores 🐐<br>
-        ✅ Argentina wins 🇦🇷<br>
-        ✅ Football happiness restored ⚽<br><br>
-        Lots of love,<br>
-        <strong>Your Kerii 💕</strong>
-      </p>
-    `;
+    startMusic();
+
+    if (yesClicks < savedMessages.length) {
+      message.textContent = savedMessages[yesClicks];
+      yesClicks++;
+      yesScale += 0.2;
+      yesBtn.style.transform = `translateX(-50%) scale(${yesScale})`;
+    } else {
+      launchConfetti();
+      card.innerHTML = `
+        <h1>ALL CURSES LIFTED 🎉💖</h1>
+        <p style="color:#ff4d79;font-weight:bold;">
+          You’re officially SAFE 😇<br><br>
+          Thank you for being my Valentine 💕<br><br>
+          Lots of love,<br>
+          <strong>Your Kerii 💖</strong>
+        </p>
+      `;
+    }
   });
 
   noBtn.addEventListener("click", () => {
+    startMusic();
     message.textContent = curses[noClicks % curses.length];
     noClicks++;
 
-    yesScale += 0.2;
-    yesBtn.style.transform = `translateX(-50%) scale(${yesScale})`;
-
     const x = Math.random() * 220 - 110;
-    const y = Math.random() * 80;
+    const y = Math.random() * 70;
     noBtn.style.transform = `translate(${x}px, ${y}px)`;
   });
 
@@ -154,11 +196,44 @@
     heart.style.left = Math.random() * 100 + "vw";
     heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
     document.body.appendChild(heart);
-
     setTimeout(() => heart.remove(), 6000);
   }
-
   setInterval(createHeart, 400);
+
+  /* 🎉 CONFETTI */
+  function launchConfetti() {
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = [];
+    for (let i = 0; i < 150; i++) {
+      pieces.push({
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        r: Math.random() * 6 + 4,
+        dx: (Math.random() - 0.5) * 10,
+        dy: (Math.random() - 0.7) * 10,
+        color: `hsl(${Math.random() * 360},100%,70%)`
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        p.dy += 0.2;
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
 </script>
 
 </body>
